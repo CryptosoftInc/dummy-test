@@ -1,13 +1,10 @@
 steps:
-  # Step 1: Build the Docker image
   - name: 'gcr.io/cloud-builders/docker'
     args: ['build', '-t', 'us-central1-docker.pkg.dev/$PROJECT_ID/dummy-repo/cloud-run-demo', '.']
 
-  # Step 2: Push the image to Artifact Registry
   - name: 'gcr.io/cloud-builders/docker'
     args: ['push', 'us-central1-docker.pkg.dev/$PROJECT_ID/dummy-repo/cloud-run-demo']
 
-  # Step 3: Deploy the container to Cloud Run
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     entrypoint: gcloud
     args:
@@ -21,3 +18,6 @@ steps:
 
 images:
   - us-central1-docker.pkg.dev/$PROJECT_ID/dummy-repo/cloud-run-demo
+
+options:
+  logs_bucket: gs://new-234
