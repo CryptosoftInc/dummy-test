@@ -1,0 +1,27 @@
+steps:
+  # Step 1: Authenticate Docker to Artifact Registry
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['login', '-u', 'oauth2accesstoken', '-p', '$(gcloud auth print-access-token)', 'us-central1-docker.pkg.dev']
+
+  # Step 2: Build the Docker image
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', 'us-central1-docker.pkg.dev/$PROJECT_ID/dummy-repo/cloud-run-demo', '.']
+
+  # Step 3: Push the image to Artifact Registry
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'us-central1-docker.pkg.dev/$PROJECT_ID/dummy-repo/cloud-run-demo']
+
+  # Step 4: Deploy the container to Cloud Run
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: gcloud
+    args:
+      - run
+      - deploy
+      - cloud-run-demo
+      - --image=us-central1-docker.pkg.dev/$PROJECT_ID/dummy-repo/cloud-run-demo
+      - --region=us-central1
+      - --platform=managed
+      - --allow-unauthenticated
+
+images:
+  - us-central1-docker.pkg.dev/$PROJECT_ID/dummy-repo/cloud-run-demo
